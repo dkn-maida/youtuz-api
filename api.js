@@ -21,11 +21,8 @@ app.get("/download", (req, res, next) => {
     var title=req.query.title;
     var url = "https://www.youtube.com/watch?v=" + videoId
 
-    console.log(url)
-
     var filename=(type == 'video')?title + '.mp4':title+ '.mp3'
-    var dl=(type == 'video') ? ytdl(url, {filter: format => format.container === 'mp4'}):ytdl(url,{ filter:'audioonly',  dlChunkSize: '256KB'})
-   
+    var dl=(type == 'video') ? ytdl(url, {filter: format => format.container === 'mp4'}):ytdl(url,{ filter:'audioonly'})
     res.attachment(filename)
     var pass = new stream.PassThrough();
     dl.pipe(pass).pipe(res)
