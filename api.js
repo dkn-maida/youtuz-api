@@ -3,6 +3,7 @@ const app = express();
 const stream = require('stream');
 const ytdl = require('ytdl-core')
 const fs = require('fs');
+const yts = require('yt-search')
 var cors = require('cors');
 var compression = require('compression')
 
@@ -26,4 +27,26 @@ app.get("/download", (req, res, next) => {
     res.attachment(filename)
     var pass = new stream.PassThrough();
     dl.pipe(pass).pipe(res)
+});
+
+
+app.get("/search", (req, res, next) => {
+
+    var results=[]
+    var query=req.query.query
+    yts( query, function ( err, r ) {
+        if ( err ){
+           callback(err, null)
+        }
+         const videos = r.videos
+         videos.forEach( function ( v ) {
+           var result={
+               "id": v.videoId,
+               "thumb": v.thumbnail,
+               "title": v.title
+           }
+           results.push(result)
+         })
+         res.json(results)
+    });
 });
