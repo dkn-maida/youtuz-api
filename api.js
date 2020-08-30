@@ -15,31 +15,38 @@ app.listen(4000, () => {
  console.log("Server running on port 4000");
 });
 
-app.get("/download", (req, res, next) => {
+app.get("/download", (req, res) => {
 
     var videoId=req.query.videoId;
     var type=req.query.type;
     var title=req.query.title;
     var url = "https://www.youtube.com/watch?v=" + videoId
-
     var filename=(type == 'video')?title + '.mp4':title+ '.mp3'
     var dl=(type == 'video') ? ytdl(url, {filter: format => format.container === 'mp4'}):ytdl(url,{ filter:'audioonly'})
     res.attachment(filename)
     var pass = new stream.PassThrough();
     dl.pipe(pass).pipe(res)
+
 });
 
+app.get("/downloadSize", (req, res) => {
+    var videoId=req.query.videoId;
+    //var type=req.query.type;
+    var url = "https://www.youtube.com/watch?v=" + videoId
+    ytdl.getBasicInfo(url).then(response => console.log(response))
+});
 
-app.get("/search", (req, res, next) => {
+app.get("/search", (req, res) => {
 
     var results=[]
     var query=req.query.query
     yts( query, function ( err, r ) {
         if ( err ){
-           callback(err, null)
+           console.Log(err)
         }
          const videos = r.videos
          videos.forEach( function ( v ) {
+           console.log(v)
            var result={
                "id": v.videoId,
                "thumb": v.thumbnail,
