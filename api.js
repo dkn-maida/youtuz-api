@@ -16,7 +16,6 @@ app.listen(4000, () => {
 });
 
 app.get("/download", (req, res) => {
-
     var videoId=req.query.videoId;
     var type=req.query.type;
     var title=req.query.title;
@@ -33,20 +32,24 @@ app.get("/downloadSize", (req, res) => {
     var videoId=req.query.videoId;
     //var type=req.query.type;
     var url = "https://www.youtube.com/watch?v=" + videoId
-    ytdl.getBasicInfo(url).then(response => console.log(response))
+    ytdl.getInfo(url)
+    .then(infos => {
+        let format=ytdl.chooseFormat(infos.formats, {filter: format => format.container === 'mp4'})
+        console.log(format)
+        res.send(format.contentLength)
+    })
+    .catch(err => console.log(err));
 });
 
 app.get("/search", (req, res) => {
-
     var results=[]
     var query=req.query.query
     yts( query, function ( err, r ) {
         if ( err ){
-           console.Log(err)
+           console.log(err)
         }
          const videos = r.videos
          videos.forEach( function ( v ) {
-           console.log(v)
            var result={
                "id": v.videoId,
                "thumb": v.thumbnail,
