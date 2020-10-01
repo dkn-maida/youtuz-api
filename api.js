@@ -28,18 +28,18 @@ app.get("/download", (req, res) => {
 
 });
 
-app.get("/downloadSize", (req, res) => {
-    var videoId=req.query.videoId;
-    //var type=req.query.type;
-    var url = "https://www.youtube.com/watch?v=" + videoId
-    ytdl.getInfo(url)
-    .then(infos => {
-        let format=ytdl.chooseFormat(infos.formats, {filter: format => format.container === 'mp4'})
-        console.log(format)
-        res.send(format.contentLength)
-    })
-    .catch(err => console.log(err));
-});
+// app.get("/downloadSize", (req, res) => {
+//     var videoId=req.query.videoId;
+//     //var type=req.query.type;
+//     var url = "https://www.youtube.com/watch?v=" + videoId
+//     ytdl.getInfo(url)
+//     .then(infos => {
+//         let format=ytdl.chooseFormat(infos.formats, {filter: format => format.container === 'mp4'})
+//         console.log(format)
+//         res.send(format.contentLength)
+//     })
+//     .catch(err => console.log(err));
+// });
 
 app.get("/search", (req, res) => {
     var results=[]
