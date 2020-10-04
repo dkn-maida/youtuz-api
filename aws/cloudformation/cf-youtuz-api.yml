@@ -1,13 +1,13 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "Stack youtuz_api for Ec2. See https://github.com/axel-springer-kugawana/glc_data-tableau."
+Description: "Stack Tableau for Ec2. See https://github.com/dkn-maida/youtuz-api"
 
 Parameters:
 
   DisplayName:
     Description: "Project name"
     Type: String
-    Default: "tableau"
+    Default: "youtuz-api"
     
   baseAMI:
     Description: "Base AMI dedicated to Tableau from ami-07d9160fa81ccffb5 / amzn2-ami-hvm-2.0.20200722.0-x86_64-gp2"
@@ -18,62 +18,31 @@ Parameters:
   Environment:
     Description: Environment
     Type: String
-    Default: "prod"
+    Default: "dev"
     AllowedValues:
       - "dev"
-      - "rec"
-      - "prod"
-
+ 
   Ec2Type:
     Description: "EC2 instance type."
     Type: String
-    Default: "r5.4xlarge"
+    Default: "t2.micro"
     AllowedValues:
-      - "t3.2xlarge"
-      - "r5.4xlarge"
+      - "t2.micro"
     ConstraintDescription: "Must be a valid EC2 instance type."
-
-  TagBloc:
-    Description: "Bloc tag."
-    Type: String
-    Default: "data"
-    AllowedValues:
-      - "data"
-
+  
   TagApp:
     Description: "Application Tag."
     Type: String
-    Default: "tableau"
+    Default: "youtuz"
     AllowedValues:
-      - "tableau"
+      - "youtuz"
 
   TagComp:
     Description: "Comp Tag."
     Type: String
-    Default: "application-server"
+    Default: "api"
     AllowedValues:
-      - "application-server"
-
-  TagTeam:
-    Description: "Feature Team tag."
-    Type: String
-    Default: "data"
-    AllowedValues:
-      - "data"
-
-  TagIsInfraAsCode:
-    Description: "IsInfraAsCode tag."
-    Type: String
-    Default: "cloudformation"
-    AllowedValues:
-      - "cloudformation"
-
-  TagNonBusinessHoursState:
-    Description: "NonBusinessHoursState tag."
-    Type: String
-    Default: "running"
-    AllowedValues:
-      - "running"
+      - "api"
 
 Mappings:
   EnvironmentMap:
@@ -88,38 +57,8 @@ Mappings:
       SecurityGroupRegionalEdge: "sg-0eef282648480fef5"
       SecurityGroupGlobalEdge: "sg-0b230a7a65e889d3e"
       SubnetDMZId: "subnet-268fca7d,subnet-d64d75b1,subnet-67fceb0c"
-      ExternalDomainName: "dev-carboatservices.fr."
-      ExternalRecord: "tableau.dev-carboatservices.fr"
-
-    rec:
-      SecurityGroupSSH: "sg-8f0be3e0"
-      VPC: "vpc-cb11eaa0"
-      SubnetId: "subnet-1dcc8576,subnet-345e9f6d,subnet-bda621d8"
-      AZIdForInstances: "eu-west-1a,eu-west-1b,eu-west-1c"
-      KeyName: "aws_key_prod"
-      DesiredCapacity: 1
-      SubNetwork: 32
-      SecurityGroupRegionalEdge: "sg-0331594d5ad8adb90"
-      SecurityGroupGlobalEdge: "sg-01320f71659a93d3a"
-      SubnetDMZId: "subnet-4b841a13,subnet-80cf92e4,subnet-91cd84fa"
-      ExternalDomainName: "rec-carboatservices.fr."
-      ExternalRecord: "tableau.rec-carboatservices.fr"
-     
- 
-    prod:
-      SecurityGroupSSH: "sg-243cdc4b"
-      VPC: "vpc-f283b39a"
-      SubnetId: "subnet-2784b44f,subnet-b883b3d0,subnet-ce83b3a6"
-      AZIdForInstances: "eu-west-1a,eu-west-1b,eu-west-1c"
-      KeyName: "aws_key_prod"
-      DesiredCapacity: 1
-      SubNetwork: 42
-      SecurityGroupRegionalEdge: "sg-04e16083130a74dde"
-      SecurityGroupGlobalEdge: "sg-03b5f8252eafde98c"
-      SubnetDMZId: "subnet-5023a93b,subnet-1723a97c,subnet-c823a9a3"
-      ExternalDomainName: "carboatservices.fr."
-      ExternalRecord: "tableau.carboatservices.fr"
-     
+      ExternalDomainName: "dev-youtuz.net."
+      ExternalRecord: "dev-youtuz.net"
 
 Resources:
 
@@ -127,184 +66,33 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Sub "${DisplayName}-instances-${Environment}"
-      GroupDescription: "Security group dedicated to Tableau Server instances."
+      GroupDescription: "Security group dedicated to youtuz-api"
       VpcId: !FindInMap [EnvironmentMap, !Ref Environment, VPC]
+
       Tags:
         - Key: "Name"
           Value: !Sub "sg-${DisplayName}-${Environment}"
         - Key: "App"
           Value: !Ref TagApp
-        - Key: "Bloc"
-          Value: !Ref TagBloc
         - Key: "Comp"
           Value: !Ref TagComp
         - Key: "Env"
           Value: !Ref Environment
-        - Key: "Team"
-          Value: !Ref TagTeam
-        - Key: "IsInfraAsCode"
-          Value: !Ref TagIsInfraAsCode
+
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
           SourceSecurityGroupId: 
             Fn::ImportValue:
-              !Sub "data-external-alb-sg-${Environment}"
+              !Sub "youtuz-external-alb-sg-${Environment}"
           Description: "Allow traffic from external Load Balancer."
-        - IpProtocol: tcp
-          FromPort: 8850
-          ToPort: 8850
-          CidrIp: "10.150.0.0/16"
-          Description: "Allow direct acces by IP to the web TSM interface from Joubert."
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          SourceSecurityGroupId: 
-            Fn::ImportValue:
-              !Sub "data-external-alb-sg-${Environment}"
-          Description: "Load Balancer access dedicated to HTTPS."
-
-        - IpProtocol: tcp
-          FromPort: 5439
-          ToPort: 5439
-          CidrIp: !Join [".", ["10", !FindInMap [EnvironmentMap, !Ref Environment, SubNetwork], "0.0/16"]]
-          Description: "Allow Tableau Server to connect to Redshift database clusters."
-        - IpProtocol: tcp
-          FromPort: 3306
-          ToPort: 3306
-          CidrIp: !Join [".", ["10", !FindInMap [EnvironmentMap, !Ref Environment, SubNetwork], "0.0/16"]]
-          Description: "Allow Tableau Server to connect to MySQL database"
-        - IpProtocol: tcp
-          FromPort: 8060
-          ToPort: 8060
-          CidrIp: "10.150.0.0/16"
-          Description: "Allow access to internal Tableau Postgres database for debug purpose."
-
-  IAMRole:
-    Type: AWS::IAM::Role
-    # main role dedicated to ec2 instance
-    Properties:
-      RoleName: !Sub "${DisplayName}-${Environment}"
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-              - ec2.amazonaws.com
-          Action:
-            - sts:AssumeRole
-      Path: "/"
-      
-      Policies:
-        - PolicyName: !Sub "${DisplayName}-credentials-secretmanager-${Environment}"
-          # used to retrieve Tableau credentials, Secret mustn't depend of DisplayName!
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - secretsmanager:GetResourcePolicy
-                  - secretsmanager:GetSecretValue
-                  - secretsmanager:DescribeSecret
-                  - secretsmanager:ListSecretVersionIds
-                Resource:
-                  - !Join ["", ["arn:aws:secretsmanager:eu-west-1:", !Ref "AWS::AccountId", ":secret:stats-", "tableau-", !Ref Environment, "-*"]]
-        - PolicyName: !Sub "${DisplayName}-s3-${Environment}"
-          # used to store Tableau backup, S3 directory mustn't depend of DisplayName!
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:PutObject
-                  - s3:GetObject
-                  - s3:ListBucket
-                Resource:
-                  - !Sub "arn:aws:s3:::stats-data.${Environment}/backup_tableau/*"
-                  - !Sub "arn:aws:s3:::stats-data.${Environment}/backup_tableau"
-        - PolicyName: !Sub "${DisplayName}-athena-${Environment}"
-          # used to query data with Athena
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:Get*
-                  - s3:List*
-                Resource:
-                  - !Sub "arn:aws:s3:::stats.datalake.${Environment}/*"
-                  - !Sub "arn:aws:s3:::stats.datalake.${Environment}"
-                  - !Sub "arn:aws:s3:::stats-data.${Environment}/*"
-                  - !Sub "arn:aws:s3:::stats-data.${Environment}"
-              - Effect: Allow
-                Action:
-                  - s3:*Object
-                Resource:
-                  - !Sub "arn:aws:s3:::stats-data.${Environment}/tmp/*"
-                  - !Sub "arn:aws:s3:::stats-data.${Environment}/tmp"
-        - PolicyName: !Sub "${DisplayName}-ec2-${Environment}"
-          # used to retrieve dynamically the current environment in userdata script
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ec2:DescribeTags
-                  - elasticloadbalancing:DescribeLoadBalancers
-                Resource:
-                  - "*"
-        - PolicyName: !Sub "${DisplayName}-ses-sendmail-${Environment}"
-          # mandatory for Postfix
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ses:SendEmail
-                  - ses:SendRawEmail
-                Resource:
-                  - "*"
-        - PolicyName: !Sub "${DisplayName}-sts-secretmanager-${Environment}"
-          # mandatory for Postfix
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - sts:AssumeRole
-                Resource:
-
-                  - "arn:aws:iam::724130552230:role/CrossAccountGetSecretsManager"
-
-        - PolicyName: !Sub "${DisplayName}-cf-${Environment}"
-          # use to backup Cloud Formation
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - cloudformation:GetTemplate
-                Resource:
-                  - !Join ["", ["arn:aws:cloudformation:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":stack/tableau-", !Ref Environment, "/*"] ]
-
-        - PolicyName: !Sub "${DisplayName}-cloudwatch-${Environment}"  
-          # use to put custom metric             
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "cloudwatch:PutMetricData"
-                Resource:
-                  - '*'
-
-
-  InstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: "/"
-      InstanceProfileName: !Sub "${DisplayName}-${Environment}"
-      Roles:
-        - !Ref IAMRole
+  
 
   AutoScalingLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       LaunchConfigurationName: !Sub "${DisplayName}-lc-${Environment}"
-      IamInstanceProfile: !Ref "InstanceProfile"
       ImageId: !Ref "baseAMI"
       InstanceType: !Ref "Ec2Type"
       KeyName: !FindInMap [EnvironmentMap, !Ref Environment, KeyName]
@@ -316,6 +104,7 @@ Resources:
           - ""
           - - "#!/bin/bash\n"
             - "#/usr/bin/su - ec2-user -c '/bin/bash /home/ec2-user/userdata.sh > /home/ec2-user/userdata.log 2>&1 &'"
+
 
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -329,7 +118,7 @@ Resources:
       MaxSize: !FindInMap [EnvironmentMap, !Ref Environment, DesiredCapacity]
       HealthCheckGracePeriod: 86400
       TargetGroupARNs:
-        - !Ref ALBExternalTargetGroup
+        - !Ref ALBInternalTargetGroup
       Tags:
         - Key: "Name"
           Value: !Sub "${DisplayName}-${Environment}"
@@ -337,27 +126,21 @@ Resources:
         - Key: "Env"
           Value: !Ref Environment
           PropagateAtLaunch: true
-        - Key: "Bloc"
-          Value: !Ref TagBloc
-          PropagateAtLaunch: true
         - Key: "Comp"
           Value: !Ref TagComp
           PropagateAtLaunch: true
         - Key: "App"
           Value: !Ref TagApp
           PropagateAtLaunch: true
-        - Key: "Team"
-          Value: !Ref TagTeam
-          PropagateAtLaunch: true
-        - Key: "IsInfraAsCode"
-          Value: !Ref TagIsInfraAsCode
-          PropagateAtLaunch: true
-        - Key: "NonBusinessHoursState"
-          Value: !Ref TagNonBusinessHoursState
-          PropagateAtLaunch: true
+    
+      
           
 # #############################################################################
-  ALBExternalTargetGroup:
+
+  #ALBInternal:
+  #TODO
+
+  ALBInternelTargetGroup:
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       VpcId: !FindInMap [EnvironmentMap, !Ref Environment, VPC]
@@ -378,68 +161,7 @@ Resources:
       Tags:
         - Key: App
           Value: !Ref TagApp
-        - Key: Bloc
-          Value: !Ref TagBloc
         - Key: Comp
           Value: !Ref TagComp
         - Key: Env
           Value: !Ref Environment
-        - Key: Team
-          Value: !Ref TagTeam
-        - Key: IsInfraAsCode
-          Value: !Ref TagIsInfraAsCode
-
-#Add DNS record
-  Route53Record:
-    Type: "AWS::Route53::RecordSetGroup"
-    Properties:
-      HostedZoneName: !FindInMap [EnvironmentMap, !Ref Environment, ExternalDomainName]
-      RecordSets: 
-        - Name: !FindInMap [EnvironmentMap, !Ref Environment, ExternalRecord]
-          Type: A 
-          AliasTarget:
-            DNSName: 
-              Fn::ImportValue:
-                !Sub "data-external-alb-dns-${Environment}"
-            HostedZoneId:
-              Fn::ImportValue:
-                !Sub "data-external-alb-dns-zone-id-${Environment}"
-
-#Add listeners rules
-  ALBListenerRule: 
-    Type: "AWS::ElasticLoadBalancingV2::ListenerRule" 
-    Properties: 
-      Actions: 
-        - Type: forward
-          TargetGroupArn: !Ref ALBExternalTargetGroup
-      Conditions: 
-        - Field: "host-header" 
-          HostHeaderConfig:
-            Values: 
-              - !FindInMap [EnvironmentMap, !Ref Environment, ExternalRecord]
-      ListenerArn: 
-         Fn::ImportValue: 
-           !Sub "data-external-alb-https-listener-${Environment}" 
-      Priority: 10
-      
-
-#Create certificate
-  Certificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      DomainName: !FindInMap [EnvironmentMap, !Ref Environment, ExternalRecord]
-      DomainValidationOptions:
-            - DomainName: !FindInMap [EnvironmentMap, !Ref Environment, ExternalRecord]
-              ValidationDomain: !FindInMap [EnvironmentMap, !Ref Environment, ExternalRecord]
-      ValidationMethod: DNS
-
-
-#AddCertificate to Listener
-  AddCertificate:
-    Type: AWS::ElasticLoadBalancingV2::ListenerCertificate
-    Properties:
-      Certificates:
-        - CertificateArn: !Ref Certificate
-      ListenerArn:
-        Fn::ImportValue: !Sub "data-external-alb-https-listener-${Environment}"
-  
