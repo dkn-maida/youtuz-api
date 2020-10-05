@@ -11,8 +11,8 @@ var compression = require('compression')
 app.use(cors());
 app.use(compression())
 
-app.listen(8080, () => {
- console.log("Server running on port 8080");
+app.listen(4000, () => {
+ console.log("Server running on port 4000");
 });
 
 app.get("/download", (req, res) => {
