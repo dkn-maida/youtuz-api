@@ -1,0 +1,6 @@
+---
+# Global variables
+
+home_dir: "/home/ec2-user"
+working_dir: "/home/ec2-user/app"
+log_dir: "/home/ec2-user/logs"
