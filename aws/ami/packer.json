@@ -12,7 +12,7 @@
       "iam_instance_profile": "operations-ami-builder",
       "instance_type": "t2.micro",
       "region": "us-east-1",
-      "source_ami": " ami-0947d2ba12ee1ff75",
+      "source_ami": "ami-0947d2ba12ee1ff75",
       "ssh_pty": "true",
       "ssh_username": "ec2-user",
       "tags": {
