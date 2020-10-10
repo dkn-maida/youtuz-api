@@ -1,5 +1,0 @@
-- name: "Install logrotate"
-  yum:
-    state: latest
-  loop:
-    - logrotate

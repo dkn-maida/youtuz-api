@@ -1,9 +1,0 @@
----
-- hosts: all
-  vars_files:
-    - "global_vars.yml"
-  become: true
-  gather_facts: True
-  roles:
-    - install
-    - monitor
