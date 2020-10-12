@@ -10,7 +10,7 @@ Parameters:
     Default: "youtuz-api"
     
   baseAMI:
-    Description: "Base AMI dedicated to Tableau from ami-07d9160fa81ccffb5 / amzn2-ami-hvm-2.0.20200722.0-x86_64-gp2"
+    Description: "Base AMI"
     Type: AWS::EC2::Image::Id
     Default: "ami-01dd7e419af12d9e6"
     ConstraintDescription: "Must be a valid AMI ID."
@@ -18,9 +18,9 @@ Parameters:
   Environment:
     Description: Environment
     Type: String
-    Default: "dev"
+    Default: "prod"
     AllowedValues:
-      - "dev"
+      - "prod"
  
   Ec2Type:
     Description: "EC2 instance type."
@@ -46,19 +46,16 @@ Parameters:
 
 Mappings:
   EnvironmentMap:
-    dev:
+    prod:
       SecurityGroupSSH: "sg-608e7b19"
-      VPC: "vpc-bc5badd7"
-      SubnetId: "subnet-14c8bf4f,subnet-26e3c852,subnet-1043b57b"
-      AZIdForInstances: "eu-west-1a,eu-west-1b,eu-west-1c"
+      VPC: "vpc-0ef074f3fe7578734"
+      SubnetId: "subnet-07d0dfce24ee3b212,subnet-007538ecfc5b4fcd3"
+      AZIdForInstances: "us-east-1a,us-east-1b"
       KeyName: "aws_key_dev"
       DesiredCapacity: 1
-      SubNetwork: 22
       SecurityGroupRegionalEdge: "sg-0eef282648480fef5"
-      SecurityGroupGlobalEdge: "sg-0b230a7a65e889d3e"
-      SubnetDMZId: "subnet-268fca7d,subnet-d64d75b1,subnet-67fceb0c"
-      ExternalDomainName: "dev-youtuz.net."
-      ExternalRecord: "dev-youtuz.net"
+      ExternalDomainName: "youtuz.net."
+      ExternalRecord: "youtuz.net"
 
 Resources:
 
