@@ -12,7 +12,7 @@ Parameters:
   baseAMI:
     Description: "Base AMI"
     Type: AWS::EC2::Image::Id
-    Default: "ami-01dd7e419af12d9e6"
+    Default: "ami-059e40a65e2df6190"
     ConstraintDescription: "Must be a valid AMI ID."
 
   Environment:
@@ -54,8 +54,7 @@ Mappings:
       KeyName: "aws_key_dev"
       DesiredCapacity: 1
       SecurityGroupRegionalEdge: "sg-0eef282648480fef5"
-      ExternalDomainName: "youtuz.net."
-      ExternalRecord: "youtuz.net"
+      MaxAsgSize: 4
 
 Resources:
 
@@ -78,8 +77,8 @@ Resources:
 
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
+          FromPort: 4000
+          ToPort: 4000
           SourceSecurityGroupId: 
             Fn::ImportValue:
               !Sub "youtuz-internal-alb-sg-${Environment}"
@@ -112,7 +111,7 @@ Resources:
       VPCZoneIdentifier: !Split [",", !FindInMap [EnvironmentMap, !Ref Environment, SubnetId]]
       DesiredCapacity: !FindInMap [EnvironmentMap, !Ref Environment, DesiredCapacity]
       MinSize: !FindInMap [EnvironmentMap, !Ref Environment, DesiredCapacity]
-      MaxSize: !FindInMap [EnvironmentMap, !Ref Environment, DesiredCapacity]
+      MaxSize: !FindInMap [EnvironmentMap, !Ref Environment, MaxAsgSize]
       HealthCheckGracePeriod: 86400
       TargetGroupARNs:
         - !Ref ALBInternalTargetGroup
@@ -163,12 +162,13 @@ Resources:
       GroupName: 'Youtuz api ALB Internal SecurityGroup'
       SecurityGroupIngress: 
         - IpProtocol: tcp
-          FromPort: 4000
-          ToPort: 4000
+          FromPort: 80
+          ToPort: 80
           # SourceSecurityGroupId: 
           #   Fn::ImportValue:
           #     !Sub "data-alb-mutual-sg-${Environment}"
-          CidrIp: 176.67.93.77/32
+          CidrIp: 81.249.149.93/32
+          #personnal IP for test purposes
 
       Tags: 
         - Key: "Name"
@@ -187,17 +187,14 @@ Resources:
     Properties:
       VpcId: !FindInMap [EnvironmentMap, !Ref Environment, VPC]
       Name: !Sub "${DisplayName}-alb-i-tg-${Environment}"
-      Port: 80
+      Port: 4000
       Protocol: HTTP
       TargetType: instance
-      TargetGroupAttributes:
-        - Key: deregistration_delay.timeout_seconds
-          Value: "60"
       Matcher:
-        HttpCode: "200-399"
+        HttpCode: "200"
       HealthCheckIntervalSeconds: 10
-      HealthCheckPath: /
-      HealthCheckPort: "80"
+      HealthCheckPath: /healthcheck
+      HealthCheckPort: "4000"
       HealthCheckProtocol: HTTP
       HealthyThresholdCount: 2
       Tags:

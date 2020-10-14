@@ -47,3 +47,7 @@ app.get("/search", (req, res) => {
          res.json(results)
     });
 });
+
+app.get("/healthcheck", (req, res) => {
+    res.send("OK")
+});
