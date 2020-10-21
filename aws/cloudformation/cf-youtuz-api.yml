@@ -48,6 +48,7 @@ Parameters:
 Mappings:
   EnvironmentMap:
     prod:
+      IamInstanceProfile: "arn:aws:iam::572705134170:instance-profile/youtuz-instance-role"
       SecurityGroupSSH: "sg-0eb14d326ec651184"
       VPC: "vpc-0ef074f3fe7578734"
       SubnetId: "subnet-07d0dfce24ee3b212,subnet-007538ecfc5b4fcd3"
@@ -90,6 +91,7 @@ Resources:
       LaunchConfigurationName: !Sub "${DisplayName}-lc-${Environment}"
       ImageId: !Ref "baseAMI"
       InstanceType: !Ref "Ec2Type"
+      IamInstanceProfile: !FindInMap [EnvironmentMap, !Ref Environment, IamInstanceProfile]
       KeyName: !FindInMap [EnvironmentMap, !Ref Environment, KeyName]
       SecurityGroups:
         - !Ref "SecurityGroupForInstances"
@@ -98,7 +100,7 @@ Resources:
         Fn::Join:
           - ""
           - - "#!/bin/bash\n"
-            - "#/usr/bin/su - ec2-user -c '/bin/bash /home/ec2-user/userdata.sh > /home/ec2-user/userdata.log 2>&1 &'"
+            - "#/usr/bin/su - ec2-user -c 'npm start'"
 
 
   AutoScalingGroup:
