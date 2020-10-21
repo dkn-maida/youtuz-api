@@ -4,8 +4,8 @@ phases:
   install:
     commands:
       - echo Entered the install phase...
-      - yum update -y
-      - yum install node.js -y
+      - sudo yum update -y
+      - sudo yum install node.js -y
   build:
     commands:
       - echo Entered the build phase...
@@ -13,5 +13,7 @@ phases:
       - npm pack
   post_build:
     commands:
-      - echo Entered the post_build phase...
-      - aws s3 cp *.tgz s3://drakin-apps/youtuz-api/
+      - ls -l
+  artifacts:
+    files:
+      - '*.tgz'
