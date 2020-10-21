@@ -5,7 +5,7 @@ phases:
     commands:
       - echo Entered the install phase...
       - yum update -y
-      - yum install node.js -y
+      - yum install nodejs -y
   build:
     commands:
       - echo Entered the build phase...
