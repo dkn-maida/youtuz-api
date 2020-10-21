@@ -4,8 +4,8 @@ phases:
   install:
     commands:
       - echo Entered the install phase...
-      - sudo yum update -y
-      - sudo yum install node.js -y
+      - yum update -y
+      - yum install node.js -y
   build:
     commands:
       - echo Entered the build phase...
@@ -14,7 +14,7 @@ phases:
   post_build:
     commands:
       - ls -l
-      
+
 artifacts:
   files:
     - '*.tgz'
