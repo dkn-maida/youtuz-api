@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Entered the install phase...
+      - yum update -y
+      - yum install node.js -y
+  build:
+    commands:
+      - echo Entered the build phase...
+      - echo Build started on `date`
+      - npm pack
+  post_build:
+    commands:
+      - echo Entered the post_build phase...
+      - aws s3 cp *.tgz s3://drakin-apps/youtuz-api/

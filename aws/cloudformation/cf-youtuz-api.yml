@@ -100,7 +100,7 @@ Resources:
         Fn::Join:
           - ""
           - - "#!/bin/bash\n"
-            - "#/usr/bin/su - ec2-user -c 'npm start'"
+            - "/usr/bin/su - ec2-user -c 'node api.js'"
 
 
   AutoScalingGroup:
