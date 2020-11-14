@@ -49,5 +49,6 @@ app.get("/search", (req, res) => {
 });
 
 app.get("/healthcheck", (req, res) => {
+    res.set('Content-Type', 'text/html');
     res.send("OK")
 });

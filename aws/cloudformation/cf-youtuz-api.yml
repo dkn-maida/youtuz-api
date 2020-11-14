@@ -165,11 +165,8 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          # SourceSecurityGroupId: 
-          #   Fn::ImportValue:
-          #     !Sub "data-alb-mutual-sg-${Environment}"
-          CidrIp: 88.125.216.167/32
-          #personnal IP for test purposes
+          SourceSecurityGroupId: "sg-0cf2a19d13bc6bfaf"
+          #Bastion sg for test purposes
 
       Tags: 
         - Key: "Name"
@@ -219,13 +216,6 @@ Resources:
       Port: 80
       Protocol: "HTTP" 
 
-  ALBInternalListenerCertificate:
-    Type: AWS::ElasticLoadBalancingV2::ListenerCertificate
-    Properties: 
-      Certificates: 
-        - Certificate
-      ListenerArn: !Ref ALBInternalListener
-
   ALBInternalListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Properties:
@@ -233,9 +223,9 @@ Resources:
         - Type: "forward"
           TargetGroupArn: !Ref ALBInternalTargetGroup 
       Conditions: 
-        Field: "host-header"
-        HostHeaderConfig:
-          Values:
-            - "api.youtuz.cloud"
+        - Field: "host-header"
+          HostHeaderConfig:
+            Values:
+              - "api.youtuz.cloud"
       ListenerArn: !Ref ALBInternalListener
       Priority: 10
