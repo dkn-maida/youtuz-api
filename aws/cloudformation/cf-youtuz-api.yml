@@ -214,7 +214,7 @@ Resources:
           FixedResponseConfig:
             ContentType: "text/html"
             MessageBody: "You reached the load balancer, but matched no rules"
-            StatusCode: 200
+            StatusCode: "200" 
       LoadBalancerArn: !Ref ALBInternal
       Port: 443
       Protocol: "HTTPS" 
