@@ -138,14 +138,14 @@ Resources:
   ALBInternal:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties: 
-      IpAddressType: 'ipv4' 
+      IpAddressType: "ipv4"
       Name: !Sub "${DisplayName}-alb-i-${Environment}"
       Scheme: 'internal'
       SecurityGroups: 
         - !Ref ALBInternalSecurityGroup
       Subnets: 
-        - 'subnet-07d0dfce24ee3b212'
-        - 'subnet-007538ecfc5b4fcd3'
+        - "subnet-07d0dfce24ee3b212"
+        - "subnet-007538ecfc5b4fcd3"
       Tags:
         - Key: "Name"
           Value: !Sub "${DisplayName}-${Environment}"
@@ -159,8 +159,8 @@ Resources:
   ALBInternalSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties: 
-      GroupDescription: 'Youtuz api ALB Internal SecurityGroup'
-      GroupName: 'Youtuz api ALB Internal SecurityGroup'
+      GroupDescription: "Youtuz api ALB Internal SecurityGroup"
+      GroupName: "Youtuz api ALB Internal SecurityGroup"
       SecurityGroupIngress: 
         - IpProtocol: tcp
           FromPort: 80
@@ -168,7 +168,7 @@ Resources:
           # SourceSecurityGroupId: 
           #   Fn::ImportValue:
           #     !Sub "data-alb-mutual-sg-${Environment}"
-          CidrIp: 81.249.149.93/32
+          CidrIp: 88.125.216.167/32
           #personnal IP for test purposes
 
       Tags: 
@@ -189,14 +189,14 @@ Resources:
       VpcId: !FindInMap [EnvironmentMap, !Ref Environment, VPC]
       Name: !Sub "${DisplayName}-alb-i-tg-${Environment}"
       Port: 4000
-      Protocol: HTTP
-      TargetType: instance
+      Protocol: "HTTP"
+      TargetType: "instance"
       Matcher:
         HttpCode: "200"
       HealthCheckIntervalSeconds: 10
       HealthCheckPath: /healthcheck
       HealthCheckPort: "4000"
-      HealthCheckProtocol: HTTP
+      HealthCheckProtocol: "HTTP"
       HealthyThresholdCount: 2
       Tags:
         - Key: App
@@ -216,8 +216,15 @@ Resources:
             MessageBody: "You reached the load balancer, but matched no rules"
             StatusCode: "200" 
       LoadBalancerArn: !Ref ALBInternal
-      Port: 443
-      Protocol: "HTTPS" 
+      Port: 80
+      Protocol: "HTTP" 
+
+  ALBInternalListenerCertificate:
+    Type: AWS::ElasticLoadBalancingV2::ListenerCertificate
+    Properties: 
+      Certificates: 
+        - Certificate
+      ListenerArn: !Ref ALBInternalListener
 
   ALBInternalListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
