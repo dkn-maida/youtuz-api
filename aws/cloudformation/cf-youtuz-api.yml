@@ -13,7 +13,7 @@ Parameters:
   baseAMI:
     Description: "Base AMI"
     Type: AWS::EC2::Image::Id
-    Default: "ami-048343943cd71b4d1"
+    Default: "ami-0460d96880659a02a"
     ConstraintDescription: "Must be a valid AMI ID."
 
   Environment:
@@ -100,7 +100,7 @@ Resources:
         Fn::Join:
           - ""
           - - "#!/bin/bash\n"
-            - "/usr/bin/su - ec2-user -c 'aws s3 cp s3://drakin-apps/youtuz-api/youtuz-api.tgz . && cd package && npm i && node api.js'"
+            - "/usr/bin/su - ec2-user -c 'aws s3 cp s3://drakin-apps/youtuz-api/youtuz-api.tgz . && tar xzvf && cd package && npm i && node api.js'"
 
 
   AutoScalingGroup:
