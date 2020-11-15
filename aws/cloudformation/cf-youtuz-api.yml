@@ -13,7 +13,7 @@ Parameters:
   baseAMI:
     Description: "Base AMI"
     Type: AWS::EC2::Image::Id
-    Default: "ami-0460d96880659a02a"
+    Default: "ami-048343943cd71b4d1"
     ConstraintDescription: "Must be a valid AMI ID."
 
   Environment:
