@@ -100,7 +100,7 @@ Resources:
         Fn::Join:
           - ""
           - - "#!/bin/bash\n"
-            - "/usr/bin/su - ec2-user -c 'node api.js'"
+            - "/usr/bin/su - ec2-user -c 'aws s3 cp s3://drakin-apps/youtuz-api/youtuz-api.tgz . && cd package && npm i && node api.js'"
 
 
   AutoScalingGroup:
