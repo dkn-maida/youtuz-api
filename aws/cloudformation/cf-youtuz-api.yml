@@ -100,8 +100,9 @@ Resources:
         Fn::Join:
           - ""
           - - "#!/bin/bash\n"
-            - "sudo yum update -y"
             - "/usr/bin/su - ec2-user -c 'aws s3 cp s3://drakin-apps/youtuz-api/youtuz-api.tgz . && tar xzvf && cd package && npm i && node api.js'"
+            - "sudo yum update -y"
+            
 
 
   AutoScalingGroup:
