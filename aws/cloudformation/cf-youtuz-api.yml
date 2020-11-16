@@ -102,7 +102,7 @@ Resources:
           - - "#!/bin/bash\n"
             - "sudo yum update -y\n"
             - "ec2-user && cd\n"
-            - "sudo su -c 'aws s3 cp s3://drakin-apps/youtuz-api/youtuz-api.tgz . && tar xzvf youtuz-api.tgz && cd package && npm i && node api.js'"
+            - "sudo su ec2-uer -c 'aws s3 cp s3://drakin-apps/youtuz-api/youtuz-api.tgz . && tar xzvf youtuz-api.tgz && cd package && npm i && node api.js'"
             
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
