@@ -229,3 +229,16 @@ Resources:
               - "api.youtuz.cloud"
       ListenerArn: !Ref ALBInternalListener
       Priority: 10
+
+
+###############################################################################
+#Route53 record
+  ALBRoute53:
+    Type: AWS::Route53::RecordSet
+    Properties: 
+      AliasTarget: 
+        DBSName: GetAtt ALBInternal.DNSName
+        EvaluateTargetHealth: false
+        HostedZoneId: Z09023093REM7MJ59NP9Q
+      Name: api.youtuz.cloud
+      Type: A
