@@ -237,8 +237,8 @@ Resources:
     Type: AWS::Route53::RecordSet
     Properties: 
       AliasTarget: 
-        DNSName: GetAtt ALBInternal.DNSName
-        EvaluateTargetHealth: false
-        HostedZoneId: Z09023093REM7MJ59NP9Q
+        DNSName: !GetAtt ALBInternal.DNSName
+        HostedZoneId: !GetAtt ALBInternal.CanonicalHostedZoneID
       Name: api.youtuz.cloud
+      HostedZoneId: Z09023093REM7MJ59NP9Q
       Type: A
