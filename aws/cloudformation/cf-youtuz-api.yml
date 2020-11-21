@@ -215,6 +215,8 @@ Resources:
       LoadBalancerArn: !Ref ALB
       Port: 443
       Protocol: "HTTPS"
+      Certificates:
+        - CertificateArn: !FindInMap [EnvironmentMap, !Ref Environment, Certificate]
 
   ALBListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
