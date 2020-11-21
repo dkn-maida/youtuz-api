@@ -229,7 +229,9 @@ Resources:
           HostHeaderConfig:
             Values:
               - "api.youtuz.net"
-          HttpHeaderConfig: "x-api-key"
+        - Field: "http-header"
+          HttpHeaderConfig: 
+            HttpHeaderName: "x-api-key"
             Values:
               - !FindInMap [EnvironmentMap, !Ref Environment, ApiKey]
       ListenerArn: !Ref ALBListener
