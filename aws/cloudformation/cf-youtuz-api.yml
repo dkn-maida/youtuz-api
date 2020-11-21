@@ -57,6 +57,7 @@ Mappings:
       DesiredCapacity: 1
       SecurityGroupRegionalEdge: "sg-0eef282648480fef5"
       Certificate: arn:aws:acm:us-east-1:572705134170:certificate/166f5a66-9038-431e-9c01-d63faecc3237
+      ApiKey: '{{resolve:secretsmanager:youtuz-api-key:SecretString:apiKey::}}'
       MaxAsgSize: 4
 
 Resources:
@@ -215,7 +216,7 @@ Resources:
       LoadBalancerArn: !Ref ALBInternal
       Port: 443
       Protocol: "HTTPS"
-      SSLCertificateId: [EnvironmentMap, !Ref Environment, Certificate]
+      SSLCertificateId: !FindInMap [EnvironmentMap, !Ref Environment, Certificate]
 
   ALBListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
@@ -228,6 +229,9 @@ Resources:
           HostHeaderConfig:
             Values:
               - "api.youtuz.net"
+          HttpHeaderConfig: "x-api-key"
+            Values:
+              - !FindInMap [EnvironmentMap, !Ref Environment, ApiKey]
       ListenerArn: !Ref ALBListener
       Priority: 10
 
