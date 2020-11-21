@@ -83,8 +83,8 @@ Resources:
         - IpProtocol: tcp
           FromPort: 4000
           ToPort: 4000
-          SourceSecurityGroupId: !Ref ALBInternalSecurityGroup
-          Description: "Allow traffic from internal Load Balancer."
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+          Description: "Allow traffic from Load Balancer."
   
 
   AutoScalingLaunchConfig:
@@ -136,7 +136,6 @@ Resources:
           
 ###############################################################################
 
-  #ALBInternal:
   ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties: 
@@ -213,7 +212,7 @@ Resources:
             ContentType: "text/html"
             MessageBody: "You reached the load balancer, but matched no rules"
             StatusCode: "200" 
-      LoadBalancerArn: !Ref ALBInternal
+      LoadBalancerArn: !Ref ALB
       Port: 443
       Protocol: "HTTPS"
       SSLCertificateId: !FindInMap [EnvironmentMap, !Ref Environment, Certificate]
@@ -223,7 +222,7 @@ Resources:
     Properties:
       Actions: 
         - Type: "forward"
-          TargetGroupArn: !Ref ALBInternalTargetGroup 
+          TargetGroupArn: !Ref ALBTargetGroup 
       Conditions: 
         - Field: "host-header"
           HostHeaderConfig:
@@ -245,7 +244,7 @@ Resources:
     Properties: 
       AliasTarget: 
         DNSName: !GetAtt ALB.DNSName
-        HostedZoneId: !GetAtt ALBInternal.CanonicalHostedZoneID
+        HostedZoneId: !GetAtt ALB.CanonicalHostedZoneID
       Name: api.youtuz.net
       HostedZoneId: Z09023093REM7MJ59NP9Q
       Type: A
