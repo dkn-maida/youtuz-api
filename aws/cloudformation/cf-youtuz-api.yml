@@ -215,7 +215,6 @@ Resources:
       LoadBalancerArn: !Ref ALB
       Port: 443
       Protocol: "HTTPS"
-      SSLCertificateId: !FindInMap [EnvironmentMap, !Ref Environment, Certificate]
 
   ALBListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
@@ -246,5 +245,5 @@ Resources:
         DNSName: !GetAtt ALB.DNSName
         HostedZoneId: !GetAtt ALB.CanonicalHostedZoneID
       Name: api.youtuz.net
-      HostedZoneId: Z09023093REM7MJ59NP9Q
+      HostedZoneId: Z02553394M4I4FIAZQRE
       Type: A
