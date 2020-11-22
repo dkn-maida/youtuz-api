@@ -42,7 +42,6 @@ Mappings:
   EnvironmentMap:
     prod:
       IamInstanceProfile: "arn:aws:iam::572705134170:instance-profile/youtuz-instance-role"
-      SecurityGroupSSH: "sg-0eb14d326ec651184"
       VPC: "vpc-0ef074f3fe7578734"
       SubnetId: "subnet-07d0dfce24ee3b212,subnet-007538ecfc5b4fcd3"
       AZIdForInstances: "us-east-1a,us-east-1b"
@@ -66,19 +65,16 @@ Resources:
           Value: !Sub "sg-${DisplayName}-${Environment}"
         - Key: "App"
           Value: !Ref TagApp
-        - Key: "Comp"
-          Value: !Ref TagComp
         - Key: "Env"
           Value: !Ref Environment
 
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 4000
-          ToPort: 4000
+          FromPort: 3000
+          ToPort: 3000
           SourceSecurityGroupId: !Ref ALBSecurityGroup
           Description: "Allow traffic from Load Balancer."
   
-
   AutoScalingLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
@@ -89,7 +85,6 @@ Resources:
       KeyName: !FindInMap [EnvironmentMap, !Ref Environment, KeyName]
       SecurityGroups:
         - !Ref "SecurityGroupForInstances"
-        - !FindInMap [EnvironmentMap, !Ref Environment, SecurityGroupSSH]
       UserData: !Base64
         Fn::Join:
           - ""
@@ -118,9 +113,6 @@ Resources:
         - Key: "Env"
           Value: !Ref Environment
           PropagateAtLaunch: true
-        - Key: "Comp"
-          Value: !Ref TagComp
-          PropagateAtLaunch: true
         - Key: "App"
           Value: !Ref TagApp
           PropagateAtLaunch: true
@@ -145,8 +137,6 @@ Resources:
           Value: !Sub "${DisplayName}-${Environment}"
         - Key: "Env"
           Value: !Ref Environment
-        - Key: "Comp"
-          Value: !Ref TagComp
         - Key: "App"
           Value: !Ref TagApp
 
@@ -166,8 +156,6 @@ Resources:
           Value: !Sub "${DisplayName}-${Environment}"
         - Key: "Env"
           Value: !Ref Environment
-        - Key: "Comp"
-          Value: !Ref TagComp
         - Key: "App"
           Value: !Ref TagApp
       VpcId: !FindInMap [EnvironmentMap, !Ref Environment, VPC]
@@ -191,8 +179,6 @@ Resources:
       Tags:
         - Key: App
           Value: !Ref TagApp 
-        - Key: Comp
-          Value: !Ref TagComp
         - Key: Env
           Value: !Ref Environment
 
@@ -202,7 +188,7 @@ Resources:
       DefaultActions: 
         - Type: "fixed-response"
           FixedResponseConfig:
-            ContentType: "text/html"
+            ContentType: "text/html"         
             MessageBody: "Error, no rules matched"
             StatusCode: "500" 
       LoadBalancerArn: !Ref ALB
