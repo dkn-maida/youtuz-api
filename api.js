@@ -9,11 +9,8 @@ var compression = require('compression')
 
 
 app.use(cors());
-app.use(compression())
-
-app.listen(4000, () => {
- console.log("Server running on port 4000");
-});
+app.use(compression());
+app.options('*', cors());
 
 app.get("/download", (req, res) => {
     var videoId=req.query.videoId;
@@ -52,3 +49,8 @@ app.get("/healthcheck", (req, res) => {
     res.set('Content-Type', 'text/html');
     res.send("OK")
 });
+
+app.listen(4000, () => {
+    console.log("Server running on port 4000");
+   });
+   
