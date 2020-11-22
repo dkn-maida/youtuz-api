@@ -53,11 +53,10 @@ Mappings:
       VPC: "vpc-0ef074f3fe7578734"
       SubnetId: "subnet-07d0dfce24ee3b212,subnet-007538ecfc5b4fcd3"
       AZIdForInstances: "us-east-1a,us-east-1b"
-      KeyName: "youtuz-api"
+      KeyName: "youtuz"
       DesiredCapacity: 1
       SecurityGroupRegionalEdge: "sg-0eef282648480fef5"
       Certificate: arn:aws:acm:us-east-1:572705134170:certificate/166f5a66-9038-431e-9c01-d63faecc3237
-      ApiKey: '{{resolve:secretsmanager:youtuz-api-key:SecretString:apiKey::}}'
       MaxAsgSize: 4
 
 Resources:
@@ -229,12 +228,7 @@ Resources:
         - Field: "host-header"
           HostHeaderConfig:
             Values:
-              - "api.youtuz.net"
-        - Field: "http-header"
-          HttpHeaderConfig: 
-            HttpHeaderName: "x-api-key"
-            Values:
-              - !FindInMap [EnvironmentMap, !Ref Environment, ApiKey]
+              - "youtuz.net"
       ListenerArn: !Ref ALBListener
       Priority: 10
 
@@ -247,6 +241,6 @@ Resources:
       AliasTarget: 
         DNSName: !GetAtt ALB.DNSName
         HostedZoneId: !GetAtt ALB.CanonicalHostedZoneID
-      Name: api.youtuz.net
+      Name: youtuz.net
       HostedZoneId: Z02553394M4I4FIAZQRE
       Type: A
