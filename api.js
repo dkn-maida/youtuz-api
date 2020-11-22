@@ -24,7 +24,6 @@ app.get("/download", (req, res) => {
     dl.pipe(pass).pipe(res)
 });
 
-
 app.get("/search", (req, res) => {
     var results=[]
     var query=req.query.query
@@ -44,6 +43,7 @@ app.get("/search", (req, res) => {
          res.json(results)
     });
 });
+
 
 app.get("/healthcheck", (req, res) => {
     res.set('Content-Type', 'text/html');
